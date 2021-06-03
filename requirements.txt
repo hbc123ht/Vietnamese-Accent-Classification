@@ -1,0 +1,4 @@
+tensorflow
+p_tqdm
+tqdm
+argparse
