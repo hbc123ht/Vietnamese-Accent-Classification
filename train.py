@@ -31,7 +31,9 @@ def parser():
     parser.add_argument('--DATA_DIR', type = str, help = 'Dir of data')
     parser.add_argument('--CHECKPOINT_DIR', default = 'checkpoint', type = str, help ='Dir of checkpoint')
     parser.add_argument('--LOG', default='logs', type = str, help = 'Dir of logs')
-    parser.add_argument('--BATCH_SIZE', default=128, type = int)
+    parser.add_argument('--BATCH_SIZE', default=50, type = int)
+    parser.add_argument('--STEPS_PER_EPOCH', default=128, type = int)
+    parser.add_argument('--LOAD_CHECKPOINT_DIR', default=None, type = str)
     args = parser.parse_args()
     return args
 
@@ -96,13 +98,16 @@ if __name__ == '__main__':
     tb = TensorBoard(log_dir=args.LOG, histogram_freq=0, batch_size=32, write_graph=True, write_grads=True,
                      write_images=True, embeddings_freq=0, embeddings_layer_names=None,
                      embeddings_metadata=None)
+
+    #load the weights                
+    if (args.LOAD_CHECKPOINT_DIR != None): 
+        model.load_weights(args.LOAD_CHECKPOINT_DIR)
     
     # modelCheckpoint
     cp = ModelCheckpoint(os.path.join(args.CHECKPOINT_DIR, 'model.{epoch:02d}.h5'),
                                               monitor='val_loss',
                                               verbose=1,
-                                              save_best_only=True,
-                                              save_freq = args.SAVE_CHECKPOINT_FREQUENCY)
+                                              save_freq = args.SAVE_CHECKPOINT_FREQUENCY * args.STEPS_PER_EPOCH)
 
     # Image shifting
     datagen = ImageDataGenerator(width_shift_range=0.05)
@@ -115,7 +120,7 @@ if __name__ == '__main__':
     #             validation_data=(X_validation,y_validation))
     # Fit model using ImageDataGenerator
     model.fit_generator(datagen.flow(np.array(X_train), tf.stack(y_train),batch_size=args.BATCH_SIZE),
-                steps_per_epoch=len(X_train) / 32, 
+                steps_per_epoch=args.STEPS_PER_EPOCH, 
                 epochs=args.NUM_EPOCH,
                 callbacks=[tb, cp], 
                 validation_data=(np.array(X_validation), np.array(y_validation)))
