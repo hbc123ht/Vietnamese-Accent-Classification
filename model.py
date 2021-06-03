@@ -29,7 +29,7 @@ def Model(input_shape, num_classes): #64
     model.add(Dense(num_classes, activation='softmax'))
     model.compile(loss='categorical_crossentropy',
                   optimizer='adadelta',
-                  metrics=['accuracy'])
+                  metrics=['accuracy'])     
 
     return model
 

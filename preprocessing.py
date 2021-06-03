@@ -2,6 +2,7 @@ import glob
 import os
 import librosa
 import numpy as np
+import tensorflow as tf
 from keras.utils.np_utils import to_categorical
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import LabelEncoder
@@ -33,12 +34,10 @@ def to_categorical(y):
     # integer encode
     label_encoder = LabelEncoder()
     integer_encoded = label_encoder.fit_transform(y)
-    # binary encode
-    onehot_encoder = OneHotEncoder(sparse=False)
-    integer_encoded = integer_encoded.reshape(len(integer_encoded), 1)
-    onehot_encoded = onehot_encoder.fit_transform(integer_encoded)
+    integer_encoded.reshape(integer_encoded.shape[0])
+    a = tf.keras.utils.to_categorical(integer_encoded, num_classes=6)
 
-    return onehot_encoded
+    return a
 
 def get_wav(language_num, RATE = 24000):
     '''
