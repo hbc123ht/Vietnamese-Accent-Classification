@@ -51,12 +51,14 @@ if __name__ == '__main__':
     #load data
     X, y = load_data(args.DATA_DIR, categories)
     
+    # To categorical
+    y = to_categorical(y)
+
     #split and shuffle data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
 
-    # To categorical
-    y_train = to_categorical(y_train)
-    y_test = to_categorical(y_test)
+    print(np.array(X_train).shape[0], np.array(y_train).shape[0])
+    # y_test = to_categorical(y_test)
 
     # Get resampled wav files using multiprocessing
     if args.DEBUG:
@@ -82,7 +84,6 @@ if __name__ == '__main__':
     X_train = np.asarray(X_train)
     X_validation = np.asarray(X_validation)
 
-    print(X_train.reshape(154, 13, 13, 1))
     X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], X_train.shape[2], 1)
     X_validation = X_validation.reshape(X_validation.shape[0], X_validation.shape[1], X_validation.shape[2], 1)
     
@@ -112,13 +113,12 @@ if __name__ == '__main__':
     #             epochs=args.NUM_EPOCH,
     #             callbacks=[es,tb, cp], 
     #             validation_data=(X_validation,y_validation))
-
     # Fit model using ImageDataGenerator
-    model.fit_generator(datagen.flow(X_train, y_train,batch_size=args.BATCH_SIZE),
+    model.fit_generator(datagen.flow(np.array(X_train), tf.stack(y_train),batch_size=args.BATCH_SIZE),
                 steps_per_epoch=len(X_train) / 32, 
                 epochs=args.NUM_EPOCH,
-                callbacks=[es,tb, cp], 
-                validation_data=(X_validation,y_validation))
+                callbacks=[tb, cp], 
+                validation_data=(np.array(X_validation), np.array(y_validation)))
 
     # # Make predictions on full X_test MFCCs
     # y_predicted = accuracy.predict_class_all(create_segmented_mfccs(X_test), model)
