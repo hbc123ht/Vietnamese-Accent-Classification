@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras.layers import Conv2D, MaxPool2D, Flatten, Dense, Dropout
 
-def Model(input_shape): #64
+def Model(input_shape, num_classes): #64
     '''
     2D convolutional neural network
     :param X_train: Numpy array of mfccs

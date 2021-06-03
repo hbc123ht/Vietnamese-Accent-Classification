@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 from collections import Counter
 import sys
@@ -6,6 +7,8 @@ from p_tqdm import p_map
 sys.path.append('../speech-accent-recognition/src>')
 
 import tensorflow as tf
+from tensorflow.keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
+from keras.preprocessing.image import ImageDataGenerator
 import accuracy
 import multiprocessing
 import numpy as np
@@ -28,6 +31,7 @@ def parser():
     parser.add_argument('--DATA_DIR', type = str, help = 'Dir of data')
     parser.add_argument('--CHECKPOINT_DIR', default = 'checkpoint', type = str, help ='Dir of checkpoint')
     parser.add_argument('--LOG', default='logs', type = str, help = 'Dir of logs')
+    parser.add_argument('--BATCH_SIZE', default=128, type = int)
     args = parser.parse_args()
     return args
 
@@ -75,8 +79,15 @@ if __name__ == '__main__':
     # Get input shape
     input_shape = (X_train[0].shape[0], X_train[0].shape[1], 1)
 
+    X_train = np.asarray(X_train)
+    X_validation = np.asarray(X_validation)
+
+    print(X_train.reshape(154, 13, 13, 1))
+    X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], X_train.shape[2], 1)
+    X_validation = X_validation.reshape(X_validation.shape[0], X_validation.shape[1], X_validation.shape[2], 1)
+    
     # # Train model
-    model = Model()
+    model = Model(input_shape, num_classes = len(categories))
     # Stops training if accuracy does not change at least 0.005 over 10 epochs
     es = EarlyStopping(monitor='acc', min_delta=.005, patience=10, verbose=1, mode='auto')
 
@@ -86,7 +97,7 @@ if __name__ == '__main__':
                      embeddings_metadata=None)
     
     # modelCheckpoint
-    cp = tf.keras.callbacks.ModelCheckpoint(os.path.join(args.CHECKPOINT_DIR, 'model.{epoch:02d}-{val_loss:.4f}.h5'),
+    cp = ModelCheckpoint(os.path.join(args.CHECKPOINT_DIR, 'model.{epoch:02d}.h5'),
                                               monitor='val_loss',
                                               verbose=1,
                                               save_best_only=True,
@@ -95,15 +106,19 @@ if __name__ == '__main__':
     # Image shifting
     datagen = ImageDataGenerator(width_shift_range=0.05)
 
-    # Compile
-    model.compile(batch_size=batch_size,
+    # # Compile
+    # model.compile(batch_size=args.BATCH_SIZE,
+    #             steps_per_epoch=len(X_train) / 32, 
+    #             epochs=args.NUM_EPOCH,
+    #             callbacks=[es,tb, cp], 
+    #             validation_data=(X_validation,y_validation))
+
+    # Fit model using ImageDataGenerator
+    model.fit_generator(datagen.flow(X_train, y_train,batch_size=args.BATCH_SIZE),
                 steps_per_epoch=len(X_train) / 32, 
                 epochs=args.NUM_EPOCH,
                 callbacks=[es,tb, cp], 
                 validation_data=(X_validation,y_validation))
-
-    # Fit model using ImageDataGenerator
-    model.fit_generator(datagen.flow(X_train, y_train))
 
     # # Make predictions on full X_test MFCCs
     # y_predicted = accuracy.predict_class_all(create_segmented_mfccs(X_test), model)
