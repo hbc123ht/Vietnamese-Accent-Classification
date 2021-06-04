@@ -34,7 +34,7 @@ def parser():
     parser.add_argument('--BATCH_SIZE', default=32, type = int)
     parser.add_argument('--STEPS_PER_EPOCH', default=128, type = int)
     parser.add_argument('--LOAD_CHECKPOINT_DIR', default=None, type = str)
-    parser.add_argument('--LR', default=0.01, type = int)
+    parser.add_argument('--LR', default=0.01, type = str)
     args = parser.parse_args()
     return args
 
