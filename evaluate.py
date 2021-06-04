@@ -20,7 +20,7 @@ from preprocessing import (to_categorical, get_wav, to_mfcc,
                             segment_one,create_segmented_mfccs, load_data)
 from model import Model
 
-
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 def parser():
     parser = argparse.ArgumentParser(description='Configs for training')
     parser.add_argument("--DEBUG", default = True, type = bool, help = 'Debug mode')
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     y = to_categorical(y, num_classes = len(categories))
 
     #split and shuffle data
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
 
     # y_test = to_categorical(y_test)
 
@@ -65,25 +65,22 @@ if __name__ == '__main__':
     pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
 
 
-    X_train = p_map(get_wav, X_train)
+    # X_train = p_map(get_wav, X_train)
     X_test = p_map(get_wav, X_test)
     # # Convert to MFCC
     if args.DEBUG:
         print('Converting to MFCC....')
-    X_train = p_map(to_mfcc, X_train)
+    # X_train = p_map(to_mfcc, X_train)
     X_test = p_map(to_mfcc, X_test)
 
     # # Create segments from MFCCs
-    X_train, y_train = make_segments(X_train, y_train, COL_SIZE = args.COL_SIZE)
     X_validation, y_validation = make_segments(X_test, y_test, COL_SIZE = args.COL_SIZE)
 
     # Get input shape
-    input_shape = (X_train[0].shape[0], X_train[0].shape[1], 1)
+    input_shape = (X_validation[0].shape[0], X_validation[0].shape[1], 1)
 
-    X_train = np.asarray(X_train)
     X_validation = np.asarray(X_validation)
 
-    X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], X_train.shape[2], 1)
     X_validation = X_validation.reshape(X_validation.shape[0], X_validation.shape[1], X_validation.shape[2], 1)
     
     # # Train model
@@ -109,29 +106,7 @@ if __name__ == '__main__':
     # Image shifting
     datagen = ImageDataGenerator(width_shift_range=0.05)
 
-    # # Compile
-    # model.compile(batch_size=args.BATCH_SIZE,
-    #             steps_per_epoch=len(X_train) / 32, 
-    #             epochs=args.NUM_EPOCH,
-    #             callbacks=[es,tb, cp], 
-    #             validation_data=(X_validation,y_validation))
-    # Fit model using ImageDataGenerator
-    model.fit_generator(datagen.flow(np.array(X_train), tf.stack(y_train),batch_size=args.BATCH_SIZE),
-                steps_per_epoch=args.STEPS_PER_EPOCH, 
-                epochs=args.NUM_EPOCH,
-                callbacks=[tb, cp], 
-                validation_data=(np.array(X_validation), np.array(y_validation)))
+    score = model.evaluate(x = X_validation, y = y_validation,batch_size=args.BATCH_SIZE)
+    print(score[1])
 
-    # # Make predictions on full X_test MFCCs
-    # y_predicted = accuracy.predict_class_all(create_segmented_mfccs(X_test), model)
-
-    # # Print statistics
-    # print('Training samples:', train_count)
-    # print('Testing samples:', test_count)
-    # print('Accuracy to beat:', acc_to_beat)
-    # print('Confusion matrix of total samples:\n', np.sum(accuracy.confusion_matrix(y_predicted, y_test),axis=1))
-    # print('Confusion matrix:\n',accuracy.confusion_matrix(y_predicted, y_test))
-    # print('Accuracy:', accuracy.get_accuracy(y_predicted,y_test))
-
-    # # Save model
-    # save_model(model, model_filename)
+   

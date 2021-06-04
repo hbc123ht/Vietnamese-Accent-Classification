@@ -25,7 +25,7 @@ def load_data(path, categories):
                 
     return x, y
 
-def to_categorical(y):
+def to_categorical(y, num_classes = 6):
     '''
     Converts list of languages into a binary class matrix
     :param y (list): list of languages
@@ -35,9 +35,9 @@ def to_categorical(y):
     label_encoder = LabelEncoder()
     integer_encoded = label_encoder.fit_transform(y)
     integer_encoded.reshape(integer_encoded.shape[0])
-    a = tf.keras.utils.to_categorical(integer_encoded, num_classes=6)
+    a = tf.keras.utils.to_categorical(integer_encoded, num_classes=num_classes)
 
-    return a
+    return integer_encoded
 
 def get_wav(language_num, RATE = 24000):
     '''

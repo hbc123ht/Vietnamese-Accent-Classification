@@ -18,7 +18,7 @@ import argparse
 from preprocessing import (to_categorical, get_wav, to_mfcc, 
                             remove_silence, normalize_mfcc, make_segments, 
                             segment_one,create_segmented_mfccs, load_data)
-from model import Model
+from model import Model, Model2
 
 
 def parser():
@@ -31,7 +31,7 @@ def parser():
     parser.add_argument('--DATA_DIR', type = str, help = 'Dir of data')
     parser.add_argument('--CHECKPOINT_DIR', default = 'checkpoint', type = str, help ='Dir of checkpoint')
     parser.add_argument('--LOG', default='logs', type = str, help = 'Dir of logs')
-    parser.add_argument('--BATCH_SIZE', default=50, type = int)
+    parser.add_argument('--BATCH_SIZE', default=32, type = int)
     parser.add_argument('--STEPS_PER_EPOCH', default=128, type = int)
     parser.add_argument('--LOAD_CHECKPOINT_DIR', default=None, type = str)
     args = parser.parse_args()
@@ -87,7 +87,7 @@ if __name__ == '__main__':
     X_validation = X_validation.reshape(X_validation.shape[0], X_validation.shape[1], X_validation.shape[2], 1)
     
     # # Train model
-    model = Model(input_shape, num_classes = len(categories))
+    model = Model2(input_shape, num_classes = len(categories))
     # Stops training if accuracy does not change at least 0.005 over 10 epochs
     es = EarlyStopping(monitor='acc', min_delta=.005, patience=10, verbose=1, mode='auto')
 
@@ -116,7 +116,8 @@ if __name__ == '__main__':
     #             callbacks=[es,tb, cp], 
     #             validation_data=(X_validation,y_validation))
     # Fit model using ImageDataGenerator
-    model.fit_generator(datagen.flow(np.array(X_train), tf.stack(y_train),batch_size=args.BATCH_SIZE),
+    model.fit(x = np.array(X_train), y = np.array(y_train),
+                batch_size = args.BATCH_SIZE,
                 steps_per_epoch=args.STEPS_PER_EPOCH, 
                 epochs=args.NUM_EPOCH,
                 callbacks=[tb, cp], 
