@@ -32,7 +32,7 @@ def Model(input_shape, num_classes): #64
                   metrics=['accuracy'])     
 
     return model
-def Model2(input_shape, num_classes):
+def Model2(input_shape, num_classes, lr = 0.01):
     '''
     2D convolutional neural network
     :param X_train: Numpy array of mfccs
@@ -68,7 +68,7 @@ def Model2(input_shape, num_classes):
     model.add(Activation('softmax'))
 
     model.compile(loss=tf.keras.losses.categorical_crossentropy,
-              optimizer=tf.keras.optimizers.Adagrad(lr=0.01),
+              optimizer=tf.keras.optimizers.Adagrad(lr=lr),
               metrics=['accuracy'])
     return model
 
