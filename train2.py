@@ -34,6 +34,7 @@ def parser():
     parser.add_argument('--BATCH_SIZE', default=32, type = int)
     parser.add_argument('--STEPS_PER_EPOCH', default=128, type = int)
     parser.add_argument('--LOAD_CHECKPOINT_DIR', default=None, type = str)
+    parser.add_argument('--LR', default=0.01, type = int)
     args = parser.parse_args()
     return args
 
@@ -96,7 +97,7 @@ if __name__ == '__main__':
     X_validation = X_validation.reshape(X_validation.shape[0], X_validation.shape[1], X_validation.shape[2], 1)
     
     # # Train model
-    model = Model2(input_shape, num_classes = len(categories))
+    model = Model2(input_shape, num_classes = len(categories), lr = args.LR)
     # Stops training if accuracy does not change at least 0.005 over 10 epochs
     es = EarlyStopping(monitor='acc', min_delta=.005, patience=10, verbose=1, mode='auto')
 
