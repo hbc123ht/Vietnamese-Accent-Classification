@@ -1,6 +1,7 @@
 import glob
 import os
 import librosa
+import random
 import numpy as np
 import tensorflow as tf
 from keras.utils.np_utils import to_categorical
@@ -18,10 +19,10 @@ def load_data(path, categories):
     x = []
     y = []
     for file in os.listdir(path):
-        x.append(os.path.join(path, file))
         for category in categories:
             if file.startswith(category):
                 y.append(category)
+                x.append(os.path.join(path, file))
                 
     return x, y
 
@@ -47,7 +48,7 @@ def get_wav(language_num, RATE = 24000):
     '''
 
     y, sr = librosa.load(language_num)
-    return(librosa.core.resample(y=y,orig_sr=sr,target_sr=RATE, scale=True))
+    return (librosa.core.resample(y=y,orig_sr=sr,target_sr=RATE, scale=True))
 
 def to_mfcc(wav, RATE = 24000, N_MFCC = 13):
     '''
@@ -96,6 +97,14 @@ def make_segments(mfccs,labels, COL_SIZE = 13):
         for start in range(0, int(mfcc.shape[1] / COL_SIZE)):
             segments.append(mfcc[:, start * COL_SIZE:(start + 1) * COL_SIZE])
             seg_labels.append(label)
+        if (int(mfcc.shape[1]) < COL_SIZE):
+            begin_duration = random.randint(0, COL_SIZE - mfcc.shape[1])
+            end_duration = COL_SIZE - mfcc.shape[1] - begin_duration
+            mfcc_ = np.concatenate((np.zeros((mfcc.shape[0], begin_duration)), mfcc), axis = 1)
+            mfcc_ = np.concatenate((mfcc_,np.zeros((mfcc.shape[0], end_duration))), axis = 1)
+            segments.append(mfcc)
+            seg_labels.append(label)
+
     return(segments, seg_labels)
 
 def segment_one(mfcc, COL_SIZE = 13):
