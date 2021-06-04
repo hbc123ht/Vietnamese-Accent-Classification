@@ -37,7 +37,7 @@ def to_categorical(y, num_classes = 6):
     integer_encoded.reshape(integer_encoded.shape[0])
     a = tf.keras.utils.to_categorical(integer_encoded, num_classes=num_classes)
 
-    return integer_encoded
+    return a
 
 def get_wav(language_num, RATE = 24000):
     '''

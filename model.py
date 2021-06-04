@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow.keras.layers import Conv2D, MaxPool2D, Flatten, Dense, Dropout
+from tensorflow.keras.layers import Conv2D, MaxPool2D, Flatten, Dense, Dropout,Activation, MaxPooling2D
 
 def Model(input_shape, num_classes): #64
     '''
@@ -67,8 +67,8 @@ def Model2(input_shape, num_classes):
     model.add(Dense(num_classes))
     model.add(Activation('softmax'))
 
-    model.compile(loss=tensorflow.keras.losses.categorical_crossentropy,
-              optimizer=tensorflow.keras.optimizers.Adagrad(lr=0.01),
+    model.compile(loss=tf.keras.losses.categorical_crossentropy,
+              optimizer=tf.keras.optimizers.Adagrad(lr=0.01),
               metrics=['accuracy'])
     return model
 

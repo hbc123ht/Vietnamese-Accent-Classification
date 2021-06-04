@@ -76,12 +76,15 @@ if __name__ == '__main__':
     # # Create segments from MFCCs
     X_train, y_train = make_segments(X_train, y_train, COL_SIZE = args.COL_SIZE)
     X_validation, y_validation = make_segments(X_test, y_test, COL_SIZE = args.COL_SIZE)
-
     # Get input shape
     input_shape = (X_train[0].shape[0], X_train[0].shape[1], 1)
 
     X_train = np.asarray(X_train)
     X_validation = np.asarray(X_validation)
+    y_validation = np.asarray(y_validation)
+    
+
+
 
     X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], X_train.shape[2], 1)
     X_validation = X_validation.reshape(X_validation.shape[0], X_validation.shape[1], X_validation.shape[2], 1)
