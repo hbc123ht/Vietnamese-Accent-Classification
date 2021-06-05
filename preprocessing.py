@@ -50,7 +50,7 @@ def get_wav(language_num, RATE = 36000):
     y, sr = librosa.load(language_num)
     return (librosa.core.resample(y=y,orig_sr=sr,target_sr=RATE, scale=True))
 
-def to_mfcc(wav, RATE = 36000, N_MFCC = 300):
+def to_mfcc(wav, RATE = 36000, N_MFCC = 400):
     '''
     Converts wav file to Mel Frequency Ceptral Coefficients
     :param wav (numpy array): Wav form
