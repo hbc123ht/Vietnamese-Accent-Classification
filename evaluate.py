@@ -18,9 +18,10 @@ import argparse
 from preprocessing import (to_categorical, get_wav, to_mfcc, 
                             remove_silence, normalize_mfcc, make_segments, 
                             segment_one,create_segmented_mfccs, load_data)
-from model import Model
+from model import Model, Model2
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 def parser():
     parser = argparse.ArgumentParser(description='Configs for training')
     parser.add_argument("--DEBUG", default = True, type = bool, help = 'Debug mode')
@@ -31,9 +32,10 @@ def parser():
     parser.add_argument('--DATA_DIR', type = str, help = 'Dir of data')
     parser.add_argument('--CHECKPOINT_DIR', default = 'checkpoint', type = str, help ='Dir of checkpoint')
     parser.add_argument('--LOG', default='logs', type = str, help = 'Dir of logs')
-    parser.add_argument('--BATCH_SIZE', default=50, type = int)
+    parser.add_argument('--BATCH_SIZE', default=32, type = int)
     parser.add_argument('--STEPS_PER_EPOCH', default=128, type = int)
     parser.add_argument('--LOAD_CHECKPOINT_DIR', default=None, type = str)
+    parser.add_argument('--LR', default=0.01, type = float)
     args = parser.parse_args()
     return args
 
@@ -54,10 +56,6 @@ if __name__ == '__main__':
     # To categorical
     y = to_categorical(y, num_classes = len(categories))
 
-    #split and shuffle data
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
-
-    # y_test = to_categorical(y_test)
 
     # Get resampled wav files using multiprocessing
     if args.DEBUG:
@@ -65,48 +63,56 @@ if __name__ == '__main__':
     pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
 
 
-    # X_train = p_map(get_wav, X_train)
-    X_test = p_map(get_wav, X_test)
+    X = p_map(get_wav, X)
     # # Convert to MFCC
     if args.DEBUG:
         print('Converting to MFCC....')
-    # X_train = p_map(to_mfcc, X_train)
-    X_test = p_map(to_mfcc, X_test)
+    X = p_map(to_mfcc, X)
 
+    # # Data normalization
+    X = p_map(normalize_mfcc,X)
+
+   
+    
     # # Create segments from MFCCs
-    X_validation, y_validation = make_segments(X_test, y_test, COL_SIZE = args.COL_SIZE)
+    X, y = make_segments(X, y, COL_SIZE = args.COL_SIZE)
 
     # Get input shape
-    input_shape = (X_validation[0].shape[0], X_validation[0].shape[1], 1)
+    input_shape = (X[0].shape[0], X[0].shape[1], 1)
 
-    X_validation = np.asarray(X_validation)
+     # # Convert to numpy
+    X = np.asarray(X)
+    
 
-    X_validation = X_validation.reshape(X_validation.shape[0], X_validation.shape[1], X_validation.shape[2], 1)
+    X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
     
     # # Train model
-    model = Model(input_shape, num_classes = len(categories))
-    # Stops training if accuracy does not change at least 0.005 over 10 epochs
-    es = EarlyStopping(monitor='acc', min_delta=.005, patience=10, verbose=1, mode='auto')
-
-    # Creates log file for graphical interpretation using TensorBoard
-    tb = TensorBoard(log_dir=args.LOG, histogram_freq=0, batch_size=32, write_graph=True, write_grads=True,
-                     write_images=True, embeddings_freq=0, embeddings_layer_names=None,
-                     embeddings_metadata=None)
+    model = Model2(input_shape, num_classes = len(categories), lr = args.LR)
 
     #load the weights                
     if (args.LOAD_CHECKPOINT_DIR != None): 
         model.load_weights(args.LOAD_CHECKPOINT_DIR)
-    
-    # modelCheckpoint
-    cp = ModelCheckpoint(os.path.join(args.CHECKPOINT_DIR, 'model.{epoch:02d}.h5'),
-                                              monitor='val_loss',
-                                              verbose=1,
-                                              save_freq = args.SAVE_CHECKPOINT_FREQUENCY * args.STEPS_PER_EPOCH)
 
-    # Image shifting
-    datagen = ImageDataGenerator(width_shift_range=0.05)
-
-    score = model.evaluate(x = X_validation, y = y_validation,batch_size=args.BATCH_SIZE)
+    score = model.evaluate(X, y, batch_size=128)
     print(score[1])
+    # # Compile
+    # model.compile(batch_size=args.BATCH_SIZE,
+    #             steps_per_epoch=len(X_train) / 32, 
+    #             epochs=args.NUM_EPOCH,
+    #             callbacks=[es,tb, cp], 
+    #             validation_data=(X_validation,y_validation))
+    # Fit model using ImageDataGenerator
 
-   
+    # # Make predictions on full X_test MFCCs
+    # y_predicted = accuracy.predict_class_all(create_segmented_mfccs(X_test), model)
+
+    # # Print statistics
+    # print('Training samples:', train_count)
+    # print('Testing samples:', test_count)
+    # print('Accuracy to beat:', acc_to_beat)
+    # print('Confusion matrix of total samples:\n', np.sum(accuracy.confusion_matrix(y_predicted, y_test),axis=1))
+    # print('Confusion matrix:\n',accuracy.confusion_matrix(y_predicted, y_test))
+    # print('Accuracy:', accuracy.get_accuracy(y_predicted,y_test))
+
+    # # Save model
+    # save_model(model, model_filename)
