@@ -102,7 +102,7 @@ def make_segments(mfccs,labels, COL_SIZE = 13):
             end_duration = COL_SIZE - mfcc.shape[1] - begin_duration
             mfcc_ = np.concatenate((np.zeros((mfcc.shape[0], begin_duration)), mfcc), axis = 1)
             mfcc_ = np.concatenate((mfcc_,np.zeros((mfcc.shape[0], end_duration))), axis = 1)
-            segments.append(mfcc)
+            segments.append(mfcc_)
             seg_labels.append(label)
 
     return(segments, seg_labels)
