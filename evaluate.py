@@ -72,13 +72,12 @@ if __name__ == '__main__':
     
     # # Create segments from MFCCs
     X, y = make_segments(X, y, COL_SIZE = args.COL_SIZE)
-
     # Get input shape
     input_shape = (X[0].shape[0], X[0].shape[1], 1)
 
      # # Convert to numpy
     X = np.asarray(X)
-    
+    y = np.asarray(y)
 
     X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
     
@@ -89,26 +88,5 @@ if __name__ == '__main__':
     if (args.LOAD_CHECKPOINT_DIR != None): 
         model.load_weights(args.LOAD_CHECKPOINT_DIR)
 
-    score = model.evaluate(X, y, batch_size=128)
+    score = model.evaluate(X, y)
     print(score[1])
-    # # Compile
-    # model.compile(batch_size=args.BATCH_SIZE,
-    #             steps_per_epoch=len(X_train) / 32, 
-    #             epochs=args.NUM_EPOCH,
-    #             callbacks=[es,tb, cp], 
-    #             validation_data=(X_validation,y_validation))
-    # Fit model using ImageDataGenerator
-
-    # # Make predictions on full X_test MFCCs
-    # y_predicted = accuracy.predict_class_all(create_segmented_mfccs(X_test), model)
-
-    # # Print statistics
-    # print('Training samples:', train_count)
-    # print('Testing samples:', test_count)
-    # print('Accuracy to beat:', acc_to_beat)
-    # print('Confusion matrix of total samples:\n', np.sum(accuracy.confusion_matrix(y_predicted, y_test),axis=1))
-    # print('Confusion matrix:\n',accuracy.confusion_matrix(y_predicted, y_test))
-    # print('Accuracy:', accuracy.get_accuracy(y_predicted,y_test))
-
-    # # Save model
-    # save_model(model, model_filename)

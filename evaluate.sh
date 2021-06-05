@@ -1,3 +1,9 @@
-python3 evaluate.py --COL_SIZE 45 \
-                   --DATA_DIR wav \
-                   --LOAD_CHECKPOINT_DIR checkpoint/model.348.h5
+python3 evaluate.py --SAVE_CHECKPOINT_FREQUENCY 50 \
+                 --CHECKPOINT_DIR checkpoint \
+                 --DATA_DIR eva \
+                 --NUM_EPOCH 1000000 \
+                 --STEPS_PER_EPOCH 1000 \
+                 --COL_SIZE 45 \
+                 --LOG log1 \
+                 --LR 0.05 \
+                 --LOAD_CHECKPOINT_DIR checkpoint/model.149.h5
