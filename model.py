@@ -68,7 +68,7 @@ def Model2(input_shape, num_classes, lr = 0.01):
     model.add(Activation('softmax'))
 
     model.compile(loss=tf.keras.losses.categorical_crossentropy,
-              optimizer=tf.keras.optimizers.Adagrad(lr=lr),
+              optimizer=tf.keras.optimizers.Adadelta(lr=lr),
               metrics=['accuracy'])
     return model
 
