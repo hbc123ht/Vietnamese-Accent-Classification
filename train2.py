@@ -44,19 +44,21 @@ if __name__ == '__main__':
     args = parser()
 
     #labels
-    categories = ['female_central',
-                  'male_central',
-                  'female_north',
-                  'male_north',
-                  'female_south',
-                  'male_south']
+    categories = {'female_central' : 0,
+                  'male_central' : 1,
+                  'female_north' : 2,
+                  'male_north' : 3,
+                  'female_south' : 4,
+                  'male_south' : 5}
+    categories = {'female_north' : 0,
+                  'female_south' : 1}
     #load data
     X, y = load_data(args.DATA_DIR, categories = categories)
     # To categorical
-    y = to_categorical(y, num_classes = len(categories))
+    # y = to_categorical(y, num_classes = len(categories))
 
     #split and shuffle data
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.08, random_state=42)
 
     # y_test = to_categorical(y_test)
 
@@ -114,6 +116,7 @@ if __name__ == '__main__':
     cp = ModelCheckpoint(os.path.join(args.CHECKPOINT_DIR, 'model.{epoch:02d}.h5'),
                                               monitor='val_loss',
                                               verbose=1,
+                                              mode = 'max',
                                               save_freq = args.SAVE_CHECKPOINT_FREQUENCY * args.STEPS_PER_EPOCH)
 
     # Image shifting
