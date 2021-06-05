@@ -50,8 +50,6 @@ if __name__ == '__main__':
                   'male_north' : 3,
                   'female_south' : 4,
                   'male_south' : 5}
-    categories = {'female_north' : 0,
-                  'female_south' : 1}
     #load data
     X, y = load_data(args.DATA_DIR, categories = categories)
     # To categorical
