@@ -42,19 +42,19 @@ def Model2(input_shape, num_classes, lr = 0.01):
 
     #initiate model
     model = tf.keras.Sequential()
-    model.add(Conv2D(32, (1, 2), input_shape=input_shape))
+    model.add(Conv2D(32, (4, 4), input_shape=input_shape))
     model.add(Activation('relu'))
-    model.add(Conv2D(32, (1, 2)))
+    model.add(Conv2D(32, (4, 4)))
     model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(3, 3)))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Dropout(0.5))
 
-    model.add(Conv2D(32, (1, 2)))
+    model.add(Conv2D(32, (4, 4)))
     model.add(Activation('relu'))
     # model.add(MaxPooling2D(pool_size=(2, 2)))
     # model.add(Dropout(0.15))
 
-    model.add(Conv2D(64, (1, 2)))
+    model.add(Conv2D(64, (4, 4)))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Dropout(0.25))
@@ -67,7 +67,7 @@ def Model2(input_shape, num_classes, lr = 0.01):
     model.add(Dense(num_classes))
     model.add(Activation('softmax'))
 
-    model.compile(loss=tf.keras.losses.categorical_crossentropy,
+    model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               optimizer=tf.keras.optimizers.Adadelta(lr=lr),
               metrics=['accuracy'])
     return model
