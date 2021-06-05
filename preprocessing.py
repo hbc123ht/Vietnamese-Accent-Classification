@@ -19,9 +19,9 @@ def load_data(path, categories):
     x = []
     y = []
     for file in os.listdir(path):
-        for category in categories:
-            if file.startswith(category):
-                y.append(category)
+        for key in categories.keys():
+            if file.startswith(key):
+                y.append(categories[key])
                 x.append(os.path.join(path, file))
                 
     return x, y
@@ -40,7 +40,7 @@ def to_categorical(y, num_classes = 6):
 
     return a
 
-def get_wav(language_num, RATE = 24000):
+def get_wav(language_num, RATE = 36000):
     '''
     Load wav file from disk and down-samples to RATE
     :param language_num (list): list of file names
@@ -50,7 +50,7 @@ def get_wav(language_num, RATE = 24000):
     y, sr = librosa.load(language_num)
     return (librosa.core.resample(y=y,orig_sr=sr,target_sr=RATE, scale=True))
 
-def to_mfcc(wav, RATE = 24000, N_MFCC = 300):
+def to_mfcc(wav, RATE = 36000, N_MFCC = 300):
     '''
     Converts wav file to Mel Frequency Ceptral Coefficients
     :param wav (numpy array): Wav form
