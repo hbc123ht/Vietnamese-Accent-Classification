@@ -107,16 +107,26 @@ def make_segments(mfccs,labels, COL_SIZE = 13):
 
     return(segments, seg_labels)
 
-def segment_one(mfcc, COL_SIZE = 13):
+def segment_one(mfcc, label, COL_SIZE = 13):
     '''
     Creates segments from on mfcc image. If last segments is not long enough to be length of columns divided by COL_SIZE
     :param mfcc (numpy array): MFCC array
     :return (numpy array): Segmented MFCC array
     '''
     segments = []
+    seg_labels = []
     for start in range(0, int(mfcc.shape[1] / COL_SIZE)):
-        segments.append(mfcc[:, start * COL_SIZE:(start + 1) * COL_SIZE])
-    return(np.array(segments))
+            segments.append(mfcc[:, start * COL_SIZE:(start + 1) * COL_SIZE])
+            seg_labels.append(label)
+    if (int(mfcc.shape[1]) < COL_SIZE):
+        begin_duration = random.randint(0, COL_SIZE - mfcc.shape[1])
+        end_duration = COL_SIZE - mfcc.shape[1] - begin_duration
+        mfcc_ = np.concatenate((np.zeros((mfcc.shape[0], begin_duration)), mfcc), axis = 1)
+        mfcc_ = np.concatenate((mfcc_,np.zeros((mfcc.shape[0], end_duration))), axis = 1)
+        segments.append(mfcc_)
+        seg_labels.append(label)
+
+    return(np.array(segments), np.array(seg_labels))
 
 def create_segmented_mfccs(X_train):
     '''
