@@ -15,7 +15,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 import argparse
 
-from preprocessing import (to_categorical, get_wav, to_mfcc, 
+from utils import (to_categorical, get_wav, to_mfcc, 
                             remove_silence, normalize_mfcc, make_segments, 
                             segment_one,create_segmented_mfccs, load_data)
 from model import Model, Model2
