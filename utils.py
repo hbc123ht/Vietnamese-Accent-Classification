@@ -9,6 +9,18 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 
+def load_categories(path):
+    '''
+    Get the categories from json file
+    :param path (str): path to json file
+    :return (list): List of categories
+    ''' 
+    import json
+    with open(path) as json_data_file:
+        data = json.load(json_data_file)
+
+    return data['categories']
+
 def load_data(path, categories):
     '''
     get the labels from data file names

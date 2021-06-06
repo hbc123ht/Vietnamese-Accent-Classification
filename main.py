@@ -6,14 +6,14 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 import argparse
 
-from utils import (get_input_shape, get_wav, to_mfcc, 
+from utils import (get_input_shape, get_wav, load_categories, to_mfcc, 
                     normalize_mfcc, make_segments, 
                     load_data, get_input_shape)
 
 from model import Model
 
 import logging
-logging.basicConfig(format='%(asctime)s', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
 def parser():
     parser = argparse.ArgumentParser(description='Configs for training')
@@ -28,6 +28,7 @@ def parser():
     parser.add_argument('--BATCH_SIZE', default=32, type = int)
     parser.add_argument('--STEPS_PER_EPOCH', default=128, type = int)
     parser.add_argument('--LOAD_CHECKPOINT_DIR', default=None, type = str)
+    parser.add_argument('--CATEGORIES_DIR', default=None, type = str)
     parser.add_argument('--LR', default=0.01, type = float)
     args = parser.parse_args()
     return args
@@ -38,12 +39,8 @@ if __name__ == '__main__':
     args = parser()
 
     #labels
-    categories = {'female_central' : 0,
-                  'male_central' : 1,
-                  'female_north' : 2,
-                  'male_north' : 3,
-                  'female_south' : 4,
-                  'male_south' : 5}
+    categories = load_categories(args.CATEGORIES_DIR)
+    
     #load data
     X, y = load_data(args.DATA_DIR, categories = categories)
 

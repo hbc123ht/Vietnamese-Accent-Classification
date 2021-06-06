@@ -5,14 +5,15 @@ import tensorflow as tf
 import multiprocessing
 import argparse
 
-from utils import (get_wav, to_mfcc, 
+from utils import (get_wav, to_mfcc, load_categories,
                     normalize_mfcc, make_segments, 
                     segment_one, load_data, get_input_shape)
                             
 from model import Model
 
 import logging
-logging.basicConfig(format='%(asctime)s', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.ERROR)
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
@@ -29,6 +30,7 @@ def parser():
     parser.add_argument('--BATCH_SIZE', default=32, type = int)
     parser.add_argument('--STEPS_PER_EPOCH', default=128, type = int)
     parser.add_argument('--LOAD_CHECKPOINT_DIR', default=None, type = str)
+    parser.add_argument('--CATEGORIES_DIR', default=None, type = str)
     parser.add_argument('--LR', default=0.01, type = float)
     args = parser.parse_args()
     return args
@@ -39,13 +41,8 @@ if __name__ == '__main__':
     args = parser()
 
     #labels
-    categories = {'female_central' : 0,
-                  'male_central' : 1,
-                  'female_north' : 2,
-                  'male_north' : 3,
-                  'female_south' : 4,
-                  'male_south' : 5}
-
+    categories = load_categories(args.CATEGORIES_DIR)
+    
     #load data
     X, y = load_data(args.DATA_DIR, categories = categories)
 
@@ -72,8 +69,10 @@ if __name__ == '__main__':
     model = Model(input_shape = input_shape, num_classes = len(categories), lr = args.LR)
 
     #load the weights                
-    if (args.LOAD_CHECKPOINT_DIR != None): 
+    try:
         model.load_weights(args.LOAD_CHECKPOINT_DIR)
+    except:
+        logging.error('Unable to load checkpoints')
 
     #Evaluates
     acc = 0.0
