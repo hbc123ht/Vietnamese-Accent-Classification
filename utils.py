@@ -84,6 +84,18 @@ def normalize_mfcc(mfcc):
     mms = MinMaxScaler()
     return(mms.fit_transform(np.abs(mfcc)))
 
+def get_input_shape(mfccs, COL_SIZE):
+    """
+    Get the input shape of data
+    :param mfccs: list of mfccs
+    :param COL_SIZE: args.COL_SIZE
+    :return (tuple): input shape
+    """
+    rows = np.array(mfccs[0]).shape[0]
+    columns = COL_SIZE
+
+    return (rows, columns, 1)
+
 def make_segments(mfccs,labels, COL_SIZE = 13):
     '''
     Makes segments of mfccs and attaches them to the labels
@@ -105,7 +117,7 @@ def make_segments(mfccs,labels, COL_SIZE = 13):
             segments.append(mfcc_)
             seg_labels.append(label)
 
-    return(segments, seg_labels)
+    return(np.array(segments)[..., np.newaxis], seg_labels)
 
 def segment_one(mfcc, label, COL_SIZE = 13):
     '''
@@ -126,7 +138,7 @@ def segment_one(mfcc, label, COL_SIZE = 13):
         segments.append(mfcc_)
         seg_labels.append(label)
 
-    return(np.array(segments), np.array(seg_labels))
+    return(np.array(segments)[..., np.newaxis], np.array(seg_labels))
 
 def create_segmented_mfccs(X_train):
     '''
