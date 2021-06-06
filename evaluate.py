@@ -69,24 +69,30 @@ if __name__ == '__main__':
 
     # # Data normalization
     X = p_map(normalize_mfcc,X)
-    
-    # # Create segments from MFCCs
-    X, y = make_segments(X, y, COL_SIZE = args.COL_SIZE)
-    # Get input shape
-    input_shape = (X[0].shape[0], X[0].shape[1], 1)
 
-     # # Convert to numpy
-    X = np.asarray(X)
-    y = np.asarray(y)
+     
+    input_shape = None
+    for X_,y_ in zip(X, y):
+        X_, y_ = segment_one(X_ ,y_, COL_SIZE = args.COL_SIZE)
+        input_shape = (X_[0].shape[0], X_[0].shape[1], 1)
+        break
 
-    X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
-    
-    # # Train model
+    # # initiate model
     model = Model2(input_shape, num_classes = len(categories), lr = args.LR)
 
     #load the weights                
     if (args.LOAD_CHECKPOINT_DIR != None): 
         model.load_weights(args.LOAD_CHECKPOINT_DIR)
 
-    score = model.evaluate(X, y)
-    print(score[1])
+    acc = 0.0
+    sum = 0.0
+    for X_,y_ in zip(X, y):
+        X_, y_ = segment_one(X_ ,y_, COL_SIZE = args.COL_SIZE)
+        X_ = X_.reshape(X_.shape[0], X_.shape[1], X_.shape[2], 1)
+        score = model.evaluate(X_, y_)
+        if (score[1] >= 0.17):
+            acc += 1
+        sum += 1
+
+    print(acc / sum)
+    
