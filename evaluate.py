@@ -49,7 +49,6 @@ if __name__ == '__main__':
 
     # Get resampled wav files using multiprocessing
     logging.info('Loading wav files....')
-    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
 
     #load DATA
     X = p_map(get_wav, X)
