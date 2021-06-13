@@ -10,7 +10,7 @@ SAVE_CHECKPOINT_FREQUENCY = 50
 NUM_EPOCH = 100
 
  # Directory of data
-DATA_DIR = 'wavv'
+DATA_DIR = 'wa'
 
  #Dir of checkpoint
 CHECKPOINT_DIR = 'checkpoint'
@@ -28,7 +28,7 @@ STEPS_PER_EPOCH = 128
 LOAD_CHECKPOINT_DIR = 'checkpoint/model.149.h5'
 
 #Initial learning rate
-LR = 0.01
+LR = 0.05
 
 # Not gonna use it
 SILENCE_THRESHOLD = .01 
