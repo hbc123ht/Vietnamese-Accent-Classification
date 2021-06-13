@@ -19,9 +19,6 @@ logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.ERROR)
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 if __name__ == '__main__':
-    
-    # init arparser
-    args = parser()
 
     #labels
     categories = load_categories(os.path.join(settings.DATA_DIR, 'categories/labels.json'))
