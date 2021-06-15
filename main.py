@@ -43,15 +43,16 @@ if __name__ == '__main__':
     X_train = p_map(normalize_mfcc,X_train)
     X_test = p_map(normalize_mfcc,X_test)
            
-    # Get input shape
-    input_shape = get_input_shape(X_train, settings.COL_SIZE)
-
     logging.info('Making segments....')
     # # Create segments from MFCCs
     
     X_train, y_train = make_segments(X_train, y_train, COL_SIZE = settings.COL_SIZE)
     X_validation, y_validation = make_segments(X_test, y_test, COL_SIZE = settings.COL_SIZE)
 
+    # Get input shape
+    input_shape = get_input_shape(X_train, settings.COL_SIZE)
+    print(X_train[0].shape)
+    print(input_shape)
     # # Train model
     model = Model(input_shape, num_classes = len(categories), lr = settings.LR)
 
