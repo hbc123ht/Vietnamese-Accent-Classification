@@ -19,12 +19,12 @@ def Model(input_shape, num_classes, lr = 0.01):
     model.add(MaxPooling2D(pool_size=(3, 3)))
     model.add(Dropout(0.5))
 
-    model.add(Conv2D(32, (5, 5)))
+    model.add(Conv2D(32, (3, 3)))
     model.add(Activation('relu'))
     # model.add(MaxPooling2D(pool_size=(2, 2)))
     # model.add(Dropout(0.15))
 
-    model.add(Conv2D(64, (5, 5)))
+    model.add(Conv2D(64, (3, 3)))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Dropout(0.25))
