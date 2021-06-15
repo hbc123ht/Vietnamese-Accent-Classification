@@ -46,10 +46,12 @@ if __name__ == '__main__':
     # Get input shape
     input_shape = get_input_shape(X_train, settings.COL_SIZE)
 
+    logging.info('Making segments....')
     # # Create segments from MFCCs
+    
     X_train, y_train = make_segments(X_train, y_train, COL_SIZE = settings.COL_SIZE)
     X_validation, y_validation = make_segments(X_test, y_test, COL_SIZE = settings.COL_SIZE)
-    
+
     # # Train model
     model = Model(input_shape, num_classes = len(categories), lr = settings.LR)
 
@@ -64,7 +66,7 @@ if __name__ == '__main__':
                                               monitor='val_loss',
                                               verbose=1,
                                               mode = 'max',
-                                              save_freq = settings.SAVE_CHECKPOINT_FREQUENCY * settings.STEPS_PER_EPOCH)
+                                              save_freq = int(settings.SAVE_CHECKPOINT_FREQUENCY * (len(X_train) / settings.BATCH_SIZE)))
 
     #load the weights                
     if (settings.LOAD_CHECKPOINT_DIR != None): 
