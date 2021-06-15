@@ -16,7 +16,7 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.ERROR)
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+# os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 if __name__ == '__main__':
     
@@ -58,9 +58,12 @@ if __name__ == '__main__':
 
     for X_,y_ in zip(X, y):
         X_, y_ = segment_one(X_ ,y_, COL_SIZE = settings.COL_SIZE)
-        score = model.evaluate(X_, y_)
+        try:
+            score = model.evaluate(X_, y_)
+            acc += (score[1] >= 0.17)
+        except:
+            pass
         
-        acc += (score[1] >= 0.17)
 
     print('Accuracy : ',acc / len(y))
     
