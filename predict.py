@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
     # # get the input shape 
     input_shape = get_input_shape(X, settings.COL_SIZE)
-
+    print(input_shape)
     # # initiate model
     model = Model(input_shape = input_shape, num_classes = len(categories), lr = settings.LR)
 
@@ -56,7 +56,9 @@ if __name__ == '__main__':
     for X_,y_ in zip(X, y):
         X_, y_ = segment_one(X_ ,y_, COL_SIZE = settings.COL_SIZE)
         prediction = model.predict(X_)
-        prediction = np.argmax(np.sum(prediction,axis = 0))
+        prediction = np.argmax(prediction, axis = 1)
+        prediction = np.bincount(prediction)
+        prediction = np.argmax(prediction)
         prediction = [key for key, value in categories.items() if value == prediction]
         print(prediction)
     
