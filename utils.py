@@ -118,9 +118,12 @@ def make_segments(mfccs,labels, COL_SIZE = 13):
     segments = []
     seg_labels = []
     for mfcc,label in zip(mfccs,labels):
-        for start in range(0, int(mfcc.shape[1] / COL_SIZE)):
-            segments.append(mfcc[:, start * COL_SIZE:(start + 1) * COL_SIZE])
-            seg_labels.append(label)
+        for surplus in range(0, COL_SIZE):
+            for start in range(0, int(mfcc.shape[1] / COL_SIZE) - 1):
+                segments.append(mfcc[:, start * COL_SIZE + surplus : (start + 1) * COL_SIZE + surplus])
+                seg_labels.append(label)
+
+            
         if (int(mfcc.shape[1]) < COL_SIZE):
             begin_duration = random.randint(0, COL_SIZE - mfcc.shape[1])
             end_duration = COL_SIZE - mfcc.shape[1] - begin_duration
@@ -139,9 +142,12 @@ def segment_one(mfcc, label, COL_SIZE = 13):
     '''
     segments = []
     seg_labels = []
-    for start in range(0, int(mfcc.shape[1] / COL_SIZE)):
-            segments.append(mfcc[:, start * COL_SIZE:(start + 1) * COL_SIZE])
+    
+    for surplus in range(0, COL_SIZE):
+        for start in range(0, int(mfcc.shape[1] / COL_SIZE) - 1):
+            segments.append(mfcc[:, start * COL_SIZE + surplus : (start + 1) * COL_SIZE + surplus])
             seg_labels.append(label)
+
     if (int(mfcc.shape[1]) < COL_SIZE):
         begin_duration = random.randint(0, COL_SIZE - mfcc.shape[1])
         end_duration = COL_SIZE - mfcc.shape[1] - begin_duration
