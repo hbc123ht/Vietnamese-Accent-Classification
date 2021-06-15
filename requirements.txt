@@ -3,3 +3,4 @@ p_tqdm
 tqdm
 argparse
 librosa
+dynaconf
