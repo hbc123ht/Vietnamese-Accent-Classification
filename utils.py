@@ -168,3 +168,14 @@ def create_segmented_mfccs(X_train):
     for mfcc in X_train:
         segmented_mfccs.append(segment_one(mfcc))
     return(segmented_mfccs)
+    
+def log_specgram(audio, sample_rate, window_size=20, step_size=10, eps=1e-10):
+    nperseg = int(round(window_size * sample_rate / 1e3))
+    noverlap = int(round(step_size * sample_rate / 1e3))
+    freqs, _, spec = signal.spectrogram(audio,
+                                        fs=sample_rate,
+                                        window='hann', # 'text'
+                                        nperseg=nperseg,
+                                        noverlap = noverlap,
+                                        detrend=False)
+    return np.log(spec.T.astype(np.float32) + eps)
