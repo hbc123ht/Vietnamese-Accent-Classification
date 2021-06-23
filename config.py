@@ -1,6 +1,6 @@
 DEBUG = True
 
-# You could get it the length of a segment, 1.5 s by default 
+# You could get it the length of a segment, 1 s by default 
 COL_SIZE = 30
 
 # Frequency for saving checkpoint
@@ -10,7 +10,7 @@ SAVE_CHECKPOINT_FREQUENCY = 30
 NUM_EPOCH = 100
 
  # Directory of data
-DATA_DIR = 'wav'
+DATA_DIR = 'wavv'
 
  #Dir of checkpoint
 CHECKPOINT_DIR = 'checkpoint'
