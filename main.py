@@ -9,7 +9,7 @@ settings.load_file(path="config.py")
 
 from utils import (get_input_shape, get_wav, load_categories, to_mfcc, 
                     normalize_mfcc, make_segments, 
-                    load_data, get_input_shape)
+                    load_data, get_input_shape, remove_silence)
 
 from model import Model
 
@@ -32,6 +32,10 @@ if __name__ == '__main__':
 
     X_train = p_map(get_wav, X_train)
     X_test = p_map(get_wav, X_test)
+    
+    #remove silence
+    X_train = p_map(remove_silence, X_train)
+    X_test = p_map(remove_silence, X_test)
 
     # # Convert to MFCC
     logging.info('Converting to MFCC....')
