@@ -1,10 +1,11 @@
 DEBUG = True
 
 # You could get it the length of a segment, 1 s by default 
-COL_SIZE = 30
+COL_SIZE = 40
 
+OVERLAP_SIZE = 15
 # Frequency for saving checkpoint
-SAVE_CHECKPOINT_FREQUENCY = 30
+SAVE_CHECKPOINT_FREQUENCY = 2
 
  # Total number of epochs
 NUM_EPOCH = 100
