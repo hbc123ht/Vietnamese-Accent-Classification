@@ -78,7 +78,7 @@ def remove_silence(wav, thresh=0.04, chunk=5000):
     '''
 
     tf_list = []
-    for x in range(len(wav) / chunk):
+    for x in range(int(len(wav) / chunk)):
         if (np.any(wav[chunk * x:chunk * (x + 1)] >= thresh) or np.any(wav[chunk * x:chunk * (x + 1)] <= -thresh)):
             tf_list.extend([True] * chunk)
         else:
@@ -106,7 +106,7 @@ def get_input_shape(mfccs, COL_SIZE):
     rows = np.array(mfccs[0]).shape[0]
     columns = COL_SIZE
 
-    return (rows, columns, 1)
+    return (None, rows, columns, 1)
 
 def make_segments(mfccs,labels, COL_SIZE = 45):
     '''
