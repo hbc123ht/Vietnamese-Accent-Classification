@@ -11,7 +11,7 @@ from utils import (get_input_shape, get_wav, load_categories, to_mfcc,
                     normalize_mfcc, make_segments, 
                     load_data, get_input_shape, remove_silence)
 
-from model import Model
+from model import ResNet18
 
 import logging
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
@@ -55,10 +55,13 @@ if __name__ == '__main__':
 
     # Get input shape
     input_shape = get_input_shape(X_train, settings.COL_SIZE)
-    print(X_train[0].shape)
-    print(input_shape)
+
     # # Train model
-    model = Model(input_shape, num_classes = len(categories), lr = settings.LR)
+    model = ResNet18(len(categories))
+    model.build(input_shape = input_shape)
+    model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+              optimizer=tf.keras.optimizers.Adadelta(lr=settings.LR),
+              metrics=['accuracy'])
 
     # Creates log file for graphical interpretation using TensorBoard
     tb = TensorBoard(log_dir=settings.LOG, histogram_freq=0, batch_size=32, write_graph=True, write_grads=True,
