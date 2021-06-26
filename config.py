@@ -10,7 +10,7 @@ SAVE_CHECKPOINT_FREQUENCY = 30
 NUM_EPOCH = 100
 
  # Directory of data
-DATA_DIR = 'wavv'
+DATA_DIR = 'wav'
 
  #Dir of checkpoint
 CHECKPOINT_DIR = 'checkpoint'
