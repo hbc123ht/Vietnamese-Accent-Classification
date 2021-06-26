@@ -108,7 +108,7 @@ def get_input_shape(mfccs, COL_SIZE):
 
     return (None, rows, columns, 1)
 
-def make_segments(mfccs,labels, COL_SIZE = 45):
+def make_segments(mfccs,labels, COL_SIZE = 45, OVERLAP_SIZE = 15):
     '''
     Makes segments of mfccs and attaches them to the labels
     :param mfccs: list of mfccs
@@ -118,7 +118,7 @@ def make_segments(mfccs,labels, COL_SIZE = 45):
     segments = []
     seg_labels = []
     for mfcc,label in zip(mfccs,labels):
-        for surplus in range(0, COL_SIZE, 10):
+        for surplus in range(0, COL_SIZE, OVERLAP_SIZE):
             for start in range(0, int(mfcc.shape[1] / COL_SIZE) - 1):
                 segments.append(mfcc[:, start * COL_SIZE + surplus : (start + 1) * COL_SIZE + surplus])
                 seg_labels.append(label)
@@ -134,7 +134,7 @@ def make_segments(mfccs,labels, COL_SIZE = 45):
 
     return(np.array(segments)[..., np.newaxis], seg_labels)
 
-def segment_one(mfcc, label, COL_SIZE = 45):
+def segment_one(mfcc, label, COL_SIZE = 45, OVERLAP_SIZE = 15):
     '''
     Creates segments from on mfcc image. If last segments is not long enough to be length of columns divided by COL_SIZE
     :param mfcc (numpy array): MFCC array
@@ -143,7 +143,7 @@ def segment_one(mfcc, label, COL_SIZE = 45):
     segments = []
     seg_labels = []
     
-    for surplus in range(0, COL_SIZE, 10):
+    for surplus in range(0, COL_SIZE, OVERLAP_SIZE):
         for start in range(0, int(mfcc.shape[1] / COL_SIZE) - 1):
             segments.append(mfcc[:, start * COL_SIZE + surplus : (start + 1) * COL_SIZE + surplus])
             seg_labels.append(label)
