@@ -70,6 +70,7 @@ if __name__ == '__main__':
                                               monitor='val_loss',
                                               verbose=1,
                                               mode = 'max',
+                                              save_weights_only=True,
                                               save_freq = int(settings.SAVE_CHECKPOINT_FREQUENCY * (len(X_train) / settings.BATCH_SIZE)))
 
     #load the weights                

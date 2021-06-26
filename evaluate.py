@@ -10,7 +10,7 @@ from utils import (get_wav, to_mfcc, load_categories,
                     normalize_mfcc, make_segments, 
                     segment_one, load_data, get_input_shape)
                             
-from model import Model
+from model import ResNet18
 
 import logging
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
@@ -45,7 +45,11 @@ if __name__ == '__main__':
     input_shape = get_input_shape(X, settings.COL_SIZE)
     
     # # initiate model
-    model = Model(input_shape = input_shape, num_classes = len(categories), lr = settings.LR)
+    model = ResNet18(len(categories))
+    model.build(input_shape = input_shape)
+    model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+              optimizer=tf.keras.optimizers.Adadelta(lr=settings.LR),
+              metrics=['accuracy'])
 
     #load the weights                
     try:
@@ -57,7 +61,7 @@ if __name__ == '__main__':
     acc = 0.0
 
     for X_,y_ in zip(X, y):
-        X_, y_ = segment_one(X_ ,y_, COL_SIZE = settings.COL_SIZE)
+        X_, y_ = segment_one(X_ ,y_, COL_SIZE = settings.COL_SIZE, OVERLAP_SIZE = settings.OVERLAP_SIZE)
         try:
             score = model.evaluate(X_, y_)
             acc += (score[1] >= 0.17)
