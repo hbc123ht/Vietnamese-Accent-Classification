@@ -7,12 +7,11 @@ from sklearn.model_selection import train_test_split
 from dynaconf import settings
 settings.load_file(path="config.py")
 
-from utils import (get_input_shape, get_wav, load_categories, to_mfcc, 
+from utils import (get_input_shape, get_wav, load_categories, to_mfcc, to_mel, 
                     normalize_mfcc, make_segments, 
-                    load_data, get_input_shape, remove_silence)
+                    load_data, get_input_shape, remove_silence, add_dim)
 
 from model import ResNet18
-
 import logging
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
@@ -35,22 +34,22 @@ if __name__ == '__main__':
 
     # # Create segments from MFCCs
     X_train, y_train = make_segments(X_train, y_train, COL_SIZE = settings.COL_SIZE, OVERLAP_SIZE = settings.OVERLAP_SIZE)
-    X_validation, y_validation = make_segments(X_test, y_test, COL_SIZE = settings.COL_SIZE, OVERLAP_SIZE = settings.OVERLAP_SIZE)
+    X_val, y_val = make_segments(X_test, y_test, COL_SIZE = settings.COL_SIZE, OVERLAP_SIZE = settings.OVERLAP_SIZE)
 
     # # Convert to MFCC
     logging.info('Converting to MFCC....')
-    X_train = p_map(to_mfcc, X_train)
-    X_test = p_map(to_mfcc, X_test)
+    X_train = p_map(to_mel, X_train)
+    X_val = p_map(to_mel, X_val)
 
     # # Data normalization
     logging.info('Nomalizing data....')
     X_train = p_map(normalize_mfcc,X_train)
-    X_test = p_map(normalize_mfcc,X_test)
+    X_val = p_map(normalize_mfcc,X_val)
            
-    logging.info('Making segments....')
-
+    X_train = p_map(add_dim,X_train)
+    X_val = p_map(add_dim,X_val)
     # Get input shape
-    input_shape = get_input_shape(X_train, settings.COL_SIZE)
+    input_shape = get_input_shape(X_train)
 
     # # Train model
     model = ResNet18(len(categories))
@@ -85,4 +84,4 @@ if __name__ == '__main__':
                 steps_per_epoch= len(X_train) / settings.BATCH_SIZE,
                 epochs=settings.NUM_EPOCH,
                 callbacks=[tb, cp], 
-                validation_data=(np.array(X_validation), np.array(y_validation)))
+                validation_data=(np.array(X_val), np.array(y_val)))

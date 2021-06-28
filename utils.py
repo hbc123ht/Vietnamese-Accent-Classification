@@ -104,7 +104,15 @@ def normalize_mfcc(mfcc):
     mms = MinMaxScaler()
     return(mms.fit_transform(np.abs(mfcc)))
 
-def get_input_shape(mfccs, COL_SIZE):
+def add_dim(mfcc):
+    '''
+    Add a dimension for training
+    :param mfcc:
+    :return:
+    '''
+    return np.array(mfcc)[..., np.newaxis]
+
+def get_input_shape(mfccs):
     """
     Get the input shape of data
     :param mfccs: list of mfccs
@@ -112,7 +120,7 @@ def get_input_shape(mfccs, COL_SIZE):
     :return (tuple): input shape
     """
     rows = np.array(mfccs[0]).shape[0]
-    columns = COL_SIZE
+    columns = np.array(mfccs[0]).shape[1]
 
     return (None, rows, columns, 1)
 
@@ -135,8 +143,8 @@ def make_segments(mfccs,labels, COL_SIZE = 45, OVERLAP_SIZE = 15):
         if (int(mfcc.shape[0]) < COL_SIZE):
             begin_duration = random.randint(0, COL_SIZE - mfcc.shape[0])
             end_duration = COL_SIZE - mfcc.shape[0] - begin_duration
-            mfcc_ = np.concatenate((np.zeros((begin_duration)), mfcc), axis = 1)
-            mfcc_ = np.concatenate((mfcc_,np.zeros((end_duration))), axis = 1)
+            mfcc_ = np.concatenate((np.zeros((begin_duration)), mfcc))
+            mfcc_ = np.concatenate((mfcc_,np.zeros((end_duration))))
             segments.append(mfcc_)
             seg_labels.append(label)
             
