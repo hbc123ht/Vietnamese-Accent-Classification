@@ -30,19 +30,16 @@ if __name__ == '__main__':
     # Get resampled wav files using multiprocessing
     logging.info('Loading wav files....')
 
-    #load DATA
-    X = p_map(get_wav, X)
+    X = get_wav(X)
 
-    # # Convert to MFCC
-    logging.info('Converting to MFCC....')
-    X = p_map(to_mfcc, X)
-    
-    # # Data normalization
-    logging.info('Nomalizing data....')
-    X = p_map(normalize_mfcc,X)
+    #get input shape
+    tmp = get_wav(X[0])
 
-    # # get the input shape 
-    input_shape = get_input_shape(X, settings.COL_SIZE)
+    tmp = segment_one(tmp ,y, COL_SIZE = settings.COL_SIZE, OVERLAP_SIZE = settings.OVERLAP_SIZE)
+
+    tmp = to_mfcc(tmp)
+
+    input_shape = get_input_shape(tmp, settings.COL_SIZE)
     
     # # initiate model
     model = ResNet18(len(categories))
@@ -61,7 +58,9 @@ if __name__ == '__main__':
     acc = 0.0
 
     for X_,y_ in zip(X, y):
+
         X_, y_ = segment_one(X_ ,y_, COL_SIZE = settings.COL_SIZE, OVERLAP_SIZE = settings.OVERLAP_SIZE)
+        X_ = to_mfcc(X_)
         try:
             score = model.evaluate(X_, y_)
             acc += (score[1] >= 0.17)
