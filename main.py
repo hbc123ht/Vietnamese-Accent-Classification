@@ -33,6 +33,10 @@ if __name__ == '__main__':
     X_train = p_map(get_wav, X_train)
     X_test = p_map(get_wav, X_test)
 
+    # # Create segments from MFCCs
+    X_train, y_train = make_segments(X_train, y_train, COL_SIZE = settings.COL_SIZE, OVERLAP_SIZE = settings.OVERLAP_SIZE)
+    X_validation, y_validation = make_segments(X_test, y_test, COL_SIZE = settings.COL_SIZE, OVERLAP_SIZE = settings.OVERLAP_SIZE)
+
     # # Convert to MFCC
     logging.info('Converting to MFCC....')
     X_train = p_map(to_mfcc, X_train)
@@ -44,10 +48,6 @@ if __name__ == '__main__':
     X_test = p_map(normalize_mfcc,X_test)
            
     logging.info('Making segments....')
-    # # Create segments from MFCCs
-    
-    X_train, y_train = make_segments(X_train, y_train, COL_SIZE = settings.COL_SIZE, OVERLAP_SIZE = settings.OVERLAP_SIZE)
-    X_validation, y_validation = make_segments(X_test, y_test, COL_SIZE = settings.COL_SIZE, OVERLAP_SIZE = settings.OVERLAP_SIZE)
 
     # Get input shape
     input_shape = get_input_shape(X_train, settings.COL_SIZE)
