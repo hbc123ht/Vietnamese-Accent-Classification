@@ -1,6 +1,7 @@
 import os
 from p_tqdm import p_map
 
+import numpy as np
 import tensorflow as tf
 import multiprocessing
 from dynaconf import settings
@@ -36,7 +37,7 @@ if __name__ == '__main__':
     tmp = add_dim(tmp)
 
     input_shape = get_input_shape(tmp)
-    
+
     # Get resampled wav files using multiprocessing
     logging.info('Loading wav files....')
 
@@ -61,15 +62,15 @@ if __name__ == '__main__':
     for X_,y_ in zip(X, y):
 
         X_, y_ = segment_one(X_ ,y_, COL_SIZE = settings.COL_SIZE, OVERLAP_SIZE = settings.OVERLAP_SIZE)
+        print(X_.shape)
         X_ = p_map(to_mel, X_)
         X_ = p_map(normalize_mfcc,X_)
         X_ = p_map(add_dim, X_)
         try:
-            score = model.evaluate(X_, y_)
+            score = model.evaluate(np.array(X_), np.array(y_))
             acc += (score[1] >= 0.17)
         except:
             pass
-        
 
     print('Accuracy : ',acc / len(y))
     
