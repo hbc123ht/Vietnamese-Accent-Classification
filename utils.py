@@ -69,7 +69,15 @@ def to_mfcc(wav, RATE = 36000, N_MFCC = 300):
     :return (2d numpy array: MFCC
     '''
     return(librosa.feature.mfcc(y=wav, sr=RATE, n_mfcc=N_MFCC))
-
+  
+def to_mel(wav, RATE = 36000, N_MELS = 200):
+    '''
+    Converts wav file to Mel Frequency Ceptral Coefficients
+    :param wav (numpy array): Wav form
+    :return (2d numpy array: MFCC
+    '''
+    return(librosa.feature.melspectrogram(y=wav, sr=RATE, n_mels=N_MELS))
+  
 def remove_silence(wav, thresh=0.04, chunk=5000):
     '''
     Searches wav form for segments of silence. If wav form values are lower than 'thresh' for 'chunk' samples, the values will be removed
