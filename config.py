@@ -11,7 +11,7 @@ SAVE_CHECKPOINT_FREQUENCY = 2
 NUM_EPOCH = 100
 
  # Directory of data
-DATA_DIR = 'wav'
+DATA_DIR = 'test'
 
  #Dir of checkpoint
 CHECKPOINT_DIR = 'checkpoint'
@@ -26,7 +26,7 @@ BATCH_SIZE = 16
 STEPS_PER_EPOCH = 128
 
 #Dir of checkpoint if u use a pretrained model, None by default
-LOAD_CHECKPOINT_DIR = None
+LOAD_CHECKPOINT_DIR = 'checkpoint/model.06.h5'
 
 #Initial learning rate
 LR = 0.05
