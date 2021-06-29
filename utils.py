@@ -70,7 +70,7 @@ def to_mfcc(wav, RATE = 36000, N_MFCC = 300):
     '''
     return(librosa.feature.mfcc(y=wav, sr=RATE, n_mfcc=N_MFCC))
 
-def to_mel(wav, RATE = 36000, N_MELS = 300):
+def to_mel(wav, RATE = 36000, N_MELS = 200):
     '''
     Converts wav file to Mel Frequency Ceptral Coefficients
     :param wav (numpy array): Wav form
