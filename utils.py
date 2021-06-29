@@ -69,15 +69,15 @@ def to_mfcc(wav, RATE = 36000, N_MFCC = 300):
     :return (2d numpy array: MFCC
     '''
     return(librosa.feature.mfcc(y=wav, sr=RATE, n_mfcc=N_MFCC))
-  
-def to_mel(wav, RATE = 36000, N_MELS = 200):
+
+def to_mel(wav, RATE = 36000, N_MELS = 300):
     '''
     Converts wav file to Mel Frequency Ceptral Coefficients
     :param wav (numpy array): Wav form
     :return (2d numpy array: MFCC
     '''
     return(librosa.feature.melspectrogram(y=wav, sr=RATE, n_mels=N_MELS))
-  
+
 def remove_silence(wav, thresh=0.04, chunk=5000):
     '''
     Searches wav form for segments of silence. If wav form values are lower than 'thresh' for 'chunk' samples, the values will be removed
@@ -104,7 +104,15 @@ def normalize_mfcc(mfcc):
     mms = MinMaxScaler()
     return(mms.fit_transform(np.abs(mfcc)))
 
-def get_input_shape(mfccs, COL_SIZE):
+def add_dim(mfcc):
+    '''
+    Add a dimension for training
+    :param mfcc:
+    :return:
+    '''
+    return np.array(mfcc)[..., np.newaxis]
+
+def get_input_shape(mfccs):
     """
     Get the input shape of data
     :param mfccs: list of mfccs
@@ -112,7 +120,7 @@ def get_input_shape(mfccs, COL_SIZE):
     :return (tuple): input shape
     """
     rows = np.array(mfccs[0]).shape[0]
-    columns = COL_SIZE
+    columns = np.array(mfccs[0]).shape[1]
 
     return (None, rows, columns, 1)
 
@@ -127,20 +135,20 @@ def make_segments(mfccs,labels, COL_SIZE = 45, OVERLAP_SIZE = 15):
     seg_labels = []
     for mfcc,label in zip(mfccs,labels):
         for surplus in range(0, COL_SIZE, OVERLAP_SIZE):
-            for start in range(0, int(mfcc.shape[1] / COL_SIZE) - 1):
-                segments.append(mfcc[:, start * COL_SIZE + surplus : (start + 1) * COL_SIZE + surplus])
+            for start in range(0, int(mfcc.shape[0] / COL_SIZE) - 1):
+                segments.append(mfcc[start * COL_SIZE + surplus : (start + 1) * COL_SIZE + surplus])
                 seg_labels.append(label)
 
             
-        if (int(mfcc.shape[1]) < COL_SIZE):
-            begin_duration = random.randint(0, COL_SIZE - mfcc.shape[1])
-            end_duration = COL_SIZE - mfcc.shape[1] - begin_duration
-            mfcc_ = np.concatenate((np.zeros((mfcc.shape[0], begin_duration)), mfcc), axis = 1)
-            mfcc_ = np.concatenate((mfcc_,np.zeros((mfcc.shape[0], end_duration))), axis = 1)
+        if (int(mfcc.shape[0]) < COL_SIZE):
+            begin_duration = random.randint(0, COL_SIZE - mfcc.shape[0])
+            end_duration = COL_SIZE - mfcc.shape[0] - begin_duration
+            mfcc_ = np.concatenate((np.zeros((begin_duration)), mfcc))
+            mfcc_ = np.concatenate((mfcc_,np.zeros((end_duration))))
             segments.append(mfcc_)
             seg_labels.append(label)
-
-    return(np.array(segments)[..., np.newaxis], seg_labels)
+            
+    return(np.array(segments), seg_labels)
 
 def segment_one(mfcc, label, COL_SIZE = 45, OVERLAP_SIZE = 15):
     '''
@@ -152,38 +160,16 @@ def segment_one(mfcc, label, COL_SIZE = 45, OVERLAP_SIZE = 15):
     seg_labels = []
     
     for surplus in range(0, COL_SIZE, OVERLAP_SIZE):
-        for start in range(0, int(mfcc.shape[1] / COL_SIZE) - 1):
-            segments.append(mfcc[:, start * COL_SIZE + surplus : (start + 1) * COL_SIZE + surplus])
+        for start in range(0, int(mfcc.shape[0] / COL_SIZE) - 1):
+            segments.append(mfcc[start * COL_SIZE + surplus : (start + 1) * COL_SIZE + surplus])
             seg_labels.append(label)
 
-    if (int(mfcc.shape[1]) < COL_SIZE):
-        begin_duration = random.randint(0, COL_SIZE - mfcc.shape[1])
-        end_duration = COL_SIZE - mfcc.shape[1] - begin_duration
-        mfcc_ = np.concatenate((np.zeros((mfcc.shape[0], begin_duration)), mfcc), axis = 1)
-        mfcc_ = np.concatenate((mfcc_,np.zeros((mfcc.shape[0], end_duration))), axis = 1)
+    if (int(mfcc.shape[0]) < COL_SIZE):
+        begin_duration = random.randint(0, COL_SIZE - mfcc.shape[0])
+        end_duration = COL_SIZE - mfcc.shape[0] - begin_duration
+        mfcc_ = np.concatenate((np.zeros((begin_duration)), mfcc))
+        mfcc_ = np.concatenate((mfcc_,np.zeros((end_duration))))
         segments.append(mfcc_)
         seg_labels.append(label)
 
-    return(np.array(segments)[..., np.newaxis], np.array(seg_labels))
-
-def create_segmented_mfccs(X_train):
-    '''
-    Creates segmented MFCCs from X_train
-    :param X_train: list of MFCCs
-    :return: segmented mfccs
-    '''
-    segmented_mfccs = []
-    for mfcc in X_train:
-        segmented_mfccs.append(segment_one(mfcc))
-    return(segmented_mfccs)
-    
-def log_specgram(audio, sample_rate, window_size=20, step_size=10, eps=1e-10):
-    nperseg = int(round(window_size * sample_rate / 1e3))
-    noverlap = int(round(step_size * sample_rate / 1e3))
-    freqs, _, spec = signal.spectrogram(audio,
-                                        fs=sample_rate,
-                                        window='hann', # 'text'
-                                        nperseg=nperseg,
-                                        noverlap = noverlap,
-                                        detrend=False)
-    return np.log(spec.T.astype(np.float32) + eps)
+    return(np.array(segments), np.array(seg_labels))
