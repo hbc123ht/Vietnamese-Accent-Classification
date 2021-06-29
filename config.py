@@ -1,9 +1,9 @@
 DEBUG = True
 
 # You could get it the length of a segment, 1 s by default 
-COL_SIZE = 48000
+COL_SIZE = 20000
 
-OVERLAP_SIZE = 24000
+OVERLAP_SIZE = 15000
 # Frequency for saving checkpoint
 SAVE_CHECKPOINT_FREQUENCY = 2
 
@@ -11,7 +11,7 @@ SAVE_CHECKPOINT_FREQUENCY = 2
 NUM_EPOCH = 100
 
  # Directory of data
-DATA_DIR = 'wavv'
+DATA_DIR = 'wav'
 
  #Dir of checkpoint
 CHECKPOINT_DIR = 'checkpoint'
@@ -26,7 +26,7 @@ BATCH_SIZE = 16
 STEPS_PER_EPOCH = 128
 
 #Dir of checkpoint if u use a pretrained model, None by default
-LOAD_CHECKPOINT_DIR = None#'pretrained/model.149.h5'
+LOAD_CHECKPOINT_DIR = None
 
 #Initial learning rate
 LR = 0.05
