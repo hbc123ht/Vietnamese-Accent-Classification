@@ -32,15 +32,12 @@ if __name__ == '__main__':
     acc = 0.
     for X_, y_ in zip(X,y):
         print(y_)
+        print(X_)
         X_ = get_wav(X_)
         X_ = make_segment(X_, COL_SIZE = settings.COL_SIZE, OVERLAP_SIZE = settings.OVERLAP_SIZE)
         X_ = p_map(to_mfcc, X_)
         X_ = p_map(normalize_mfcc,X_)
         X_ = p_map(add_dim, X_)
-        prediction = model.predict(np.array(X_))
-        prediction = np.argmax(prediction, axis = 1)
-        prediction = np.bincount(prediction)
-        prediction = np.argmax(prediction)
         try:
             prediction = model.predict(np.array(X_))
             prediction = np.argmax(prediction, axis = 1)
