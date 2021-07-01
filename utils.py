@@ -72,9 +72,9 @@ def to_mfcc(wav, RATE = 36000, N_MFCC = 300):
 
 def to_mel(wav, RATE = 36000, N_MELS = 300):
     '''
-    Converts wav file to Mel Frequency Ceptral Coefficients
+    Converts wav file to Mel Spectrogram
     :param wav (numpy array): Wav form
-    :return (2d numpy array: MFCC
+    :return (2d numpy array: MelSpec
     '''
     return(librosa.feature.melspectrogram(y=wav, sr=RATE, n_mels=N_MELS))
 
@@ -173,3 +173,24 @@ def segment_one(mfcc, label, COL_SIZE = 45, OVERLAP_SIZE = 15):
         seg_labels.append(label)
 
     return(np.array(segments), np.array(seg_labels))
+
+def make_segment(mfcc, COL_SIZE = 45, OVERLAP_SIZE = 1):
+    '''
+    Creates segments from on mfcc image. If last segments is not long enough to be length of columns divided by COL_SIZE
+    :param mfcc (numpy array): MFCC array
+    :return (numpy array): Segmented MFCC array
+    '''
+    segments = []
+    
+    for surplus in range(0, COL_SIZE, OVERLAP_SIZE):
+        for start in range(0, int(mfcc.shape[0] / COL_SIZE) - 1):
+            segments.append(mfcc[start * COL_SIZE + surplus : (start + 1) * COL_SIZE + surplus])
+
+    if (int(mfcc.shape[0]) < COL_SIZE):
+        begin_duration = random.randint(0, COL_SIZE - mfcc.shape[0])
+        end_duration = COL_SIZE - mfcc.shape[0] - begin_duration
+        mfcc_ = np.concatenate((np.zeros((begin_duration)), mfcc))
+        mfcc_ = np.concatenate((mfcc_,np.zeros((end_duration))))
+        segments.append(mfcc_)
+
+    return(np.array(segments))
