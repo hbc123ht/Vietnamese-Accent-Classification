@@ -13,8 +13,11 @@ NUM_EPOCH = 100
  # Directory of data
 DATA_DIR = 'test'
 
+# Directory of evaluating data
+EVALUATE_DIR = 'test'
+
  #Dir of checkpoint
-CHECKPOINT_DIR = 'checkpoint'
+CHECKPOINT_DIR = 'checkpoint2/model.06.h5'
 
 #'Dir of logs
 LOG = 'logs' 
@@ -26,7 +29,10 @@ BATCH_SIZE = 16
 STEPS_PER_EPOCH = 128
 
 #Dir of checkpoint if u use a pretrained model, None by default
-LOAD_CHECKPOINT_DIR = 'checkpoint/model.06.h5'
+LOAD_CHECKPOINT_DIR = 'checkpoint'
+
+# model dir
+LOAD_MODEL_DIR = 'model'
 
 #Initial learning rate
 LR = 0.05
