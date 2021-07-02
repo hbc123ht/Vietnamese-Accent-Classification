@@ -10,7 +10,7 @@ from utils import (get_wav, to_mfcc, load_categories, to_mel,
                     normalize_mfcc, make_segments, 
                     segment_one, load_data, get_input_shape, make_segment, add_dim)
                             
-from model import Model
+from model import ResNet18
 
 import logging
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     #load data
     X, y = load_data(os.path.join(settings.EVALUATE_DIR,'data'), categories = categories)
 
-
+    #load model
     model = tf.keras.models.load_model(settings.LOAD_MODEL_DIR)
     sum = 0.
     acc = 0.
