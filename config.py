@@ -3,7 +3,7 @@ DEBUG = True
 # You could get it the length of a segment, 1 s by default 
 COL_SIZE = 20000
 
-OVERLAP_SIZE = 15000
+OVERLAP_SIZE = 7000
 # Frequency for saving checkpoint
 SAVE_CHECKPOINT_FREQUENCY = 2
 
@@ -29,7 +29,7 @@ BATCH_SIZE = 16
 STEPS_PER_EPOCH = 128
 
 #Dir of checkpoint if u use a pretrained model, None by default
-LOAD_CHECKPOINT_DIR = 'checkpoint'
+LOAD_CHECKPOINT_DIR = None
 
 # model dir
 LOAD_MODEL_DIR = 'model'
